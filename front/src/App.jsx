@@ -1,10 +1,7 @@
-// App.jsx
-
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginButton from './components/auth0/LoginButton';
-import Dashboard from './Dashboard';  // Página principal
+import Login from './Login';
+import Dashboard from './Dashboard';
 import './App.css';
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -14,10 +11,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginButton />} />
+        <Route path="/" element={<Login />} />
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <Dashboard user={user} /> : <LoginButton />} 
+          element={isAuthenticated ? <Dashboard user={user} /> : <Login />} 
         />
       </Routes>
     </Router>
