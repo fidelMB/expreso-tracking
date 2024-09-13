@@ -8,7 +8,8 @@ router.post('/user', async (req, res) => {
         latitude: req.body.latitude,
         longitude: req.body.longitude
       },
-      role: req.body.role
+      role: req.body.role,
+      route: req.body.route
     };
   
     try {
@@ -22,25 +23,58 @@ router.post('/user', async (req, res) => {
 });
 
 router.get('/user-by-email/:email', async (req, res) => {
-    const email = req.params.email;
+  const email = req.params.email;
   
-    try {
-      const usersRef = db.ref('users').orderByChild('email').equalTo(email);
+  try {
+    const usersRef = db.ref('users').orderByChild('email').equalTo(email);
   
-      usersRef.once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          const users = snapshot.val();
-          const userId = Object.keys(users)[0]; // Get the user ID (key)
-          
-          res.status(200).json({userData: users[userId] });
-        } else {
-          res.status(404).send('User not found');
+    usersRef.once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      const userId = Object.keys(users)[0]; // Get the user ID (key)
+      
+      res.status(200).json({userData: users[userId] });
+    } else {
+      res.status(404).send('User not found');
+    }
+    });
+  } catch (error) {
+    res.status(500).send('Error retrieving user: ' + error.message);
+  }
+});
+
+router.put('/update-location', async (req, res) => {
+  const { email, latitude, longitude } = req.body;
+
+  try {
+    // Reference to the 'users' node
+    const usersRef = db.ref('users');
+
+    // Query for the user with the specified email
+    const snapshot = await usersRef.orderByChild('email').equalTo(email).once('value');
+
+    if (snapshot.exists()) {
+      // Assuming there's only one user with that email
+      const userKey = Object.keys(snapshot.val())[0];
+      const userRef = usersRef.child(userKey);
+
+      // Update user's location
+      await userRef.update({
+        location: {
+          latitude: latitude,
+          longitude: longitude
         }
       });
-    } catch (error) {
-      res.status(500).send('Error retrieving user: ' + error.message);
+
+      res.status(200).send('User location updated successfully');
+    } else {
+      res.status(404).send('User not found');
     }
+  } catch (error) {
+    console.error('Error updating user location:', error);
+    res.status(500).send('Error updating user location: ' + error.message);
+  }
 });
-  
+
 
 module.exports = router;
