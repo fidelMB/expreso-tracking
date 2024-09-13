@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import LogoutButton from './LogoutButton'
 
 function Sidebar( { user, userData } ) {
   const {logout } = useAuth0();
@@ -20,6 +21,7 @@ function Sidebar( { user, userData } ) {
           </li>
         </ul>
       </nav>
+      <LogoutButton />
       <button onClick={() => logout({ returnTo: window.location.origin })}>
         Cerrar sesión
       </button>
