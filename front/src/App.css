@@ -140,4 +140,32 @@
   p {
     font-family: 'Roboto', sans-serif;
   }
-  
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  height: 70vh;
+  width: 60vh;
+  border-radius: 10%;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.register-elements {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0px 10px 0px;
+  height: 70vh;
+  width: 50vh;
+  gap: 16px;
+}
+
+.register-elements p, h1 {
+  display: flex;
+  margin-bottom: 0px;
+  justify-content: center;
+}
