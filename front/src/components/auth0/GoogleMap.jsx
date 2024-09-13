@@ -23,17 +23,19 @@ function GoogleMap({ user, userData }) {
         if (userData?.role === "Student") {
           const response = await axios.get(`http://localhost:3000/location-role/Driver`);
           setDriverLocation(response.data[0]);
-          const driverLatitude = driverLocation.latitude;
-          const driverLongitude = driverLocation.longitude;
-          console.log("Driver Location:", driverLatitude, driverLongitude);
         }
       } catch (error) {
-        console.error("Error fetching driver location:", error);
+        // console.error("Error fetching driver location:", error);
       }
     };
 
     fetchDriverLocation();
+    const intervalId = setInterval(fetchDriverLocation, 15000); // Fetch every minute
+    console.log("Driver Location:", driverLocation.latitude, driverLocation.longitude);
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [userData, driverLocation.latitude, driverLocation.longitude]);
+  
   
   const position = { lat: 25.65291648958903, lng: -100.29012925958195 };
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;

@@ -3,7 +3,6 @@
 import React from 'react';
 import Sidebar from './components/auth0/Sidebar'; // Usamos tu Sidebar
 import GoogleMap from './components/auth0/GoogleMap';         // Mapa con la imagen temporal
-import Filter from './components/auth0/Filter';   // Filtro
 import axios from 'axios';
 import { useEffect, useState} from 'react';
 
@@ -35,35 +34,53 @@ function Dashboard({ user }) {
   }, [user.email]); // la condición para el useEffect es el email del usuario, si este cambia se vuelve a ejecutar la consulta
 
   // Check if geolocation is supported to update the users location
-  if ("geolocation" in navigator) {
-    // Request the user's current position
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      const updateLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
 
-        try {
-          axios.put('http://localhost:3000/update-location', {
-            email: user.email,
-            latitude: latitude,
-            longitude: longitude
-          });
-        } catch (error) {
-          console.error("Error updating location:", error);
-        }
+            try {
+              axios.put('http://localhost:3000/update-location', {
+                email: user.email,
+                latitude: latitude,
+                longitude: longitude
+              });
 
-      },
-      (error) => {
-        console.error(`Error getting location: ${error.message}`);
-      },
-      {
-        enableHighAccuracy: true, // Optionally, request high accuracy
-        timeout: 5000, // Time in milliseconds before the request times out
-        maximumAge: 0 // Maximum age of cached position in milliseconds
-      }
-    );
-  } else {
-    console.log("Geolocation is not supported");
-  }
+              setUserData((prevUserData) => ({
+                ...prevUserData,
+                location: {
+                  latitude: latitude,
+                  longitude: longitude
+                }
+              }));
+
+            } catch (error) {
+              console.error("Error updating location:", error);
+            }
+          },
+          (error) => {
+            console.error(`Error getting location: ${error.message}`);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          }
+        );
+      };
+
+      // Update location immediately and then every 15 seconds
+      updateLocation();
+      const intervalId = setInterval(updateLocation, 15000);
+
+      // Cleanup interval on component unmount
+      return () => clearInterval(intervalId);
+    } else {
+      console.log("Geolocation is not supported");
+    }
+  }, [user.email]);
 
   return (
     <div className="app-container">
@@ -77,7 +94,6 @@ function Dashboard({ user }) {
         {" "}
         Longitud: {userData?.location?.longitude ? userData.location.longitude : "Cargando..."}
       </p>
-      {/* <Filter/> */}
       </div>
       <GoogleMap user={user} userData={userData}/>
     </div>
