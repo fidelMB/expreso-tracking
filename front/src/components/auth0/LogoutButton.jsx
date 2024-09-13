@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 function LogoutButton() {
   const { logout } = useAuth0();
   const navigate = useNavigate();
+  const backUrl = 'https://expreso-tracking.vercel.app/';
 
   const handleLogout = () => {
-    logout({ returnTo: 'https://expreso-tracking.vercel.app/' });
+    logout({ returnTo: backUrl });
     navigate('/');
   };
 
