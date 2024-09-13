@@ -21,7 +21,7 @@ function GoogleMap({ user, userData }) {
     const fetchDriverLocation = async () => {
       try {
         if (userData?.role === "Student") {
-          const response = await axios.get(`http://localhost:3000/location-role/Driver`);
+          const response = await axios.get(`${API_URL}/location-role/Driver`);
           setDriverLocation(response.data[0]);
         }
       } catch (error) {

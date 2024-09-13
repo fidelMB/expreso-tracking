@@ -5,7 +5,7 @@ function RegisterButton({ email, selectedRol, selectedItem }) {
 
     const handleOnClick = () => {
         try {
-            axios.post('http://localhost:3000/user', {
+            axios.post(`${API_URL}/user`, {
                 email: email,
                 latitude: 0,
                 longitude: 0,
