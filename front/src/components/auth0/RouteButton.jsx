@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown } from 'antd';
 
 
-function RouteButton() {
-    const [selectedItem, setSelectedItem] = useState(null);
-
+function RouteButton({ selectedItem, setSelectedItem }) {
     const items = [
         {
             label: 'Puerta de Hierro',
