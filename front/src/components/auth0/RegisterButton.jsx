@@ -5,7 +5,7 @@ function RegisterButton({ email, selectedRol, selectedItem }) {
 
     const handleOnClick = () => {
         try {
-            axios.post(`${API_URL}/user`, {
+            axios.post(`${import.meta.env.VITE_API_URL}/user`, {
                 email: email,
                 latitude: 0,
                 longitude: 0,

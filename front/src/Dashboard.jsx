@@ -23,7 +23,7 @@ function Dashboard({ user }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get(`${API_URL}/user-by-email/${user.email}`);
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/user-by-email/${user.email}`);
         setUserData(result.data.userData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -42,7 +42,7 @@ function Dashboard({ user }) {
             const { latitude, longitude } = position.coords;
 
             try {
-              axios.put(`${API_URL}/update-location`, {
+              axios.put(`${import.meta.env.VITE_API_URL}/update-location`, {
                 email: user.email,
                 latitude: latitude,
                 longitude: longitude
