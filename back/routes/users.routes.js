@@ -76,5 +76,26 @@ router.put('/update-location', async (req, res) => {
   }
 });
 
+router.get('/location-role/:role', async (req, res) => {
+  const roleParam = req.params.role;
+
+  try {
+    const usersRef = db.ref('users');
+    // Query users with the specified route
+    const snapshot = await usersRef.orderByChild('role').equalTo(roleParam).once('value');
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const locations = Object.keys(data).map(key => data[key].location);
+      res.status(200).json(locations);  // Return the locations
+    } else {
+      res.status(404).json({ message: 'No users found with the specified route' });
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;

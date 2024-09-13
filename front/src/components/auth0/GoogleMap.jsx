@@ -1,6 +1,7 @@
 //Map.jsx
 import React, { useEffect, useState } from "react";
-import { AdvancedMarker, APIProvider, InfoWindow, Map, useMapsLibrary, useMap } from '@vis.gl/react-google-maps';
+import { AdvancedMarker, APIProvider, InfoWindow, Map, useMapsLibrary, useMap, Marker } from '@vis.gl/react-google-maps';
+import axios from "axios";
 
 import logoExpreso from '../../fotos-Expreso/LogoExpresoTecColor.png';
 import parada1 from '../../fotos-Expreso/parada1.png'
@@ -10,12 +11,32 @@ import parada4 from '../../fotos-Expreso/parada4.png'
 import parada5 from '../../fotos-Expreso/parada5.png'
 import parada6 from '../../fotos-Expreso/parada6.png'
 import parada7 from '../../fotos-Expreso/parada7.png'
-
+import busMarker from '../../fotos-Expreso/bus_marker.png';
+import you_here from '../../fotos-Expreso/you_here.png';
 
 function GoogleMap({ user, userData }) {
-  const latitude = userData?.location?.latitude ? userData.location.latitude : "";
-  const longitude = userData?.location?.longitude ? userData.location.longitude : "";
+  const [driverLocation, setDriverLocation] = useState({});
 
+  useEffect(() => {
+    const fetchDriverLocation = async () => {
+      try {
+        if (userData?.role === "Student") {
+          const response = await axios.get(`http://localhost:3000/location-role/Driver`);
+          setDriverLocation(response.data[0]);
+        }
+      } catch (error) {
+        // console.error("Error fetching driver location:", error);
+      }
+    };
+
+    fetchDriverLocation();
+    const intervalId = setInterval(fetchDriverLocation, 15000); // Fetch every minute
+    console.log("Driver Location:", driverLocation.latitude, driverLocation.longitude);
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, [userData, driverLocation.latitude, driverLocation.longitude]);
+  
+  
   const position = { lat: 25.65291648958903, lng: -100.29012925958195 };
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID;
@@ -52,12 +73,25 @@ function GoogleMap({ user, userData }) {
           fullscreenControl={false} 
           onCameraChange={(ev) => console.log('Camera changed:', ev.detail.center, 'Zoom:', ev.detail.zoom)}
         >
+          
+          {driverLocation.latitude && driverLocation.longitude && (
+            <AdvancedMarker position={{ lat: driverLocation.latitude, lng: driverLocation.longitude }}>
+              <img src={busMarker} alt="Bus Marker" style={{ width: "100%", height: "90px" }}/>
+            </AdvancedMarker>
+          )}
+
+          {userData?.location?.latitude && userData?.location?.longitude && (
+            <AdvancedMarker position={{ lat: userData.location.latitude, lng: userData.location.longitude }}>
+              <img src={you_here} alt="Bus Marker" style={{ width: "100%", height: "90px" }}/>
+            </AdvancedMarker>
+          )}
+
           <AdvancedMarker 
             position={position} 
             onClick={() => setOpen(true)}
           >
             {/* Add inline CSS to resize the image */}
-            <img src={logoExpreso} alt="Logo" style={{ width: "95px", height: "90px" }} />
+            <img src={logoExpreso} alt="Logo" style={{ width: "100%", height: "80px" }} />
           </AdvancedMarker>
 
           {paradas.map((parada) => (
@@ -81,7 +115,6 @@ function GoogleMap({ user, userData }) {
             </InfoWindow>
           )}
 
-
           {open && (
             <InfoWindow position={position} onCloseClick={() => setOpen(false)}>
               <p>00:35 CAMPUS MONTERREY, EDIFICIO CIAP</p>
@@ -89,7 +122,6 @@ function GoogleMap({ user, userData }) {
           )}
 
           <Directions />
-
 
         </Map>
       </div>
