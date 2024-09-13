@@ -22,9 +22,9 @@ function Sidebar( { user, userData } ) {
         </ul>
       </nav>
       <LogoutButton />
-      <button onClick={() => logout({ returnTo: window.location.origin })}>
+      {/* <button onClick={() => logout({ returnTo: window.location.origin })}>
         Cerrar sesión
-      </button>
+      </button> */}
     </div>
   );
 }
