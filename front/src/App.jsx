@@ -1,16 +1,22 @@
-import './App.css'
-import LoginButton from './components/auth0/LoginButton'
-import LogoutButton from './components/auth0/LogoutButton'
-import Profile from './components/auth0/Profile'
+// App.jsx
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginButton from './components/auth0/LoginButton';
+import Dashboard from './Dashboard';  // Página principal
+import './App.css';
+
 
 function App() {
   return (
-    <>
-      <LoginButton />
-      <Profile />
-      <LogoutButton />
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginButton />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
