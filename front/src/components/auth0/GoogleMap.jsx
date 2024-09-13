@@ -1,16 +1,21 @@
+//Map.jsx
 import React, { useEffect, useState } from "react";
 import { AdvancedMarker, APIProvider, InfoWindow, Map, useMapsLibrary, useMap } from '@vis.gl/react-google-maps';
 
-import logoExpreso from './fotos-Expreso/LogoExpresoTecColor.png';
-import parada1 from './fotos-Expreso/parada1.png'
-import parada2 from './fotos-Expreso/parada2.png'
-import parada3 from './fotos-Expreso/parada3.png'
-import parada4 from './fotos-Expreso/parada4.png'
-import parada5 from './fotos-Expreso/parada5.png'
-import parada6 from './fotos-Expreso/parada6.png'
-import parada7 from './fotos-Expreso/parada7.png'
+import logoExpreso from '../../fotos-Expreso/LogoExpresoTecColor.png';
+import parada1 from '../../fotos-Expreso/parada1.png'
+import parada2 from '../../fotos-Expreso/parada2.png'
+import parada3 from '../../fotos-Expreso/parada3.png'
+import parada4 from '../../fotos-Expreso/parada4.png'
+import parada5 from '../../fotos-Expreso/parada5.png'
+import parada6 from '../../fotos-Expreso/parada6.png'
+import parada7 from '../../fotos-Expreso/parada7.png'
 
-export default function Mapa() {
+
+function GoogleMap({ user, userData }) {
+  const latitude = userData?.location?.latitude ? userData.location.latitude : "";
+  const longitude = userData?.location?.longitude ? userData.location.longitude : "";
+
   const position = { lat: 25.65291648958903, lng: -100.29012925958195 };
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID;
@@ -92,52 +97,54 @@ export default function Mapa() {
   );
 }
 
+export default GoogleMap;
+
 
 function Directions() {
-    const map = useMap();
-    const routesLibrary = useMapsLibrary("routes");
-  
-    const [directionsService, setDirectionsService] = useState(null);
-    const [directionsRenderer, setDirectionsRenderer] = useState(null);
-  
-    useEffect(() => {
-      if (!routesLibrary || !map) return;
-  
-      const renderer = new routesLibrary.DirectionsRenderer({
-        map,
-        suppressMarkers: true, // Suppress all markers (origin, destination, and waypoints)
+  const map = useMap();
+  const routesLibrary = useMapsLibrary("routes");
+
+  const [directionsService, setDirectionsService] = useState(null);
+  const [directionsRenderer, setDirectionsRenderer] = useState(null);
+
+  useEffect(() => {
+    if (!routesLibrary || !map) return;
+
+    const renderer = new routesLibrary.DirectionsRenderer({
+      map,
+      suppressMarkers: true, // Suppress all markers (origin, destination, and waypoints)
+    });
+    setDirectionsRenderer(renderer);
+    setDirectionsService(new routesLibrary.DirectionsService());
+
+    // Clean up the directionsRenderer when component unmounts
+    return () => {
+      if (renderer) {
+        renderer.setMap(null);
+      }
+    };
+  }, [routesLibrary, map]);
+
+  useEffect(() => {
+    if (!directionsService || !directionsRenderer) return;
+
+    const request = {
+      origin: { lat: 25.65291648958903, lng: -100.29012925958195 }, // Example origin
+      destination: { lat: 25.762812424065363, lng: -100.41303695331942 }, // Example destination
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      provideRouteAlternatives: true,
+    };
+
+    directionsService
+      .route(request)
+      .then((response) => {
+        directionsRenderer.setDirections(response); // Render directions without markers
+      })
+      .catch((error) => {
+        console.error("Directions request failed due to: ", error);
       });
-      setDirectionsRenderer(renderer);
-      setDirectionsService(new routesLibrary.DirectionsService());
-  
-      // Clean up the directionsRenderer when component unmounts
-      return () => {
-        if (renderer) {
-          renderer.setMap(null);
-        }
-      };
-    }, [routesLibrary, map]);
-  
-    useEffect(() => {
-      if (!directionsService || !directionsRenderer) return;
-  
-      const request = {
-        origin: { lat: 25.65291648958903, lng: -100.29012925958195 }, // Example origin
-        destination: { lat: 25.762812424065363, lng: -100.41303695331942 }, // Example destination
-        travelMode: window.google.maps.TravelMode.DRIVING,
-        provideRouteAlternatives: true,
-      };
-  
-      directionsService
-        .route(request)
-        .then((response) => {
-          directionsRenderer.setDirections(response); // Render directions without markers
-        })
-        .catch((error) => {
-          console.error("Directions request failed due to: ", error);
-        });
-    }, [directionsService, directionsRenderer]);
-  
-    return null; // No visual component, just logic for directions
-  }
-  
+  }, [directionsService, directionsRenderer]);
+
+  return null; // No visual component, just logic for directions
+}
+
