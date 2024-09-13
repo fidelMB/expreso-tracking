@@ -11,6 +11,17 @@ function Dashboard({ user }) {
   const [userData, setUserData] = useState({});
   const formattedDate = new Date().toLocaleDateString();
 
+  // userData tiene todos los datos del usuario
+  // userData: {
+  //   
+  //   email: "",
+  //   location: {
+  //     latitude: 0,
+  //     longitude: 0
+  //   },
+  //   role: "",
+  //   route: ""
+  // }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,16 +35,36 @@ function Dashboard({ user }) {
     fetchData();
   }, [user.email]); // la condición para el useEffect es el email del usuario, si este cambia se vuelve a ejecutar la consulta
 
-  // userData tiene todos los datos del usuario
-  // userData: {
-  //   email: "",
-  //   location: {
-  //     latitude: 0,
-  //     longitude: 0
-  //   },
-  //   role: "",
-  //   route: ""
-  // }
+  // Check if geolocation is supported to update the users location
+  if ("geolocation" in navigator) {
+    // Request the user's current position
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          axios.put('http://localhost:3000/update-location', {
+            email: user.email,
+            latitude: latitude,
+            longitude: longitude
+          });
+        } catch (error) {
+          console.error("Error updating location:", error);
+        }
+
+      },
+      (error) => {
+        console.error(`Error getting location: ${error.message}`);
+      },
+      {
+        enableHighAccuracy: true, // Optionally, request high accuracy
+        timeout: 5000, // Time in milliseconds before the request times out
+        maximumAge: 0 // Maximum age of cached position in milliseconds
+      }
+    );
+  } else {
+    console.log("Geolocation is not supported");
+  }
 
   return (
     <div className="app-container">
@@ -47,7 +78,7 @@ function Dashboard({ user }) {
         {" "}
         Longitud: {userData?.location?.longitude ? userData.location.longitude : "Cargando..."}
       </p>
-      <Filter/>
+      {/* <Filter/> */}
       </div>
       <Map user={user} userData={userData}/>
     </div>

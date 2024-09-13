@@ -2,7 +2,10 @@
 
 import React from 'react';
 
-function Map() {
+function Map({ user, userData }) {
+  const latitude = userData?.location?.latitude ? userData.location.latitude : "";
+  const longitude = userData?.location?.longitude ? userData.location.longitude : "";
+
   return (
     <div className="map-placeholder">
       <img
