@@ -1,20 +1,27 @@
-import './App.css'
-import LoginButton from './components/auth0/LoginButton'
-import LogoutButton from './components/auth0/LogoutButton'
-import Profile from './components/auth0/Profile'
-import Map from './Map'
+// App.jsx
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginButton from './components/auth0/LoginButton';
+import Dashboard from './Dashboard';  // Página principal
+import './App.css';
+import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
+  const { isAuthenticated, user} = useAuth0();
+
   return (
-    <>
-      <LoginButton />
-      <Profile />
-      <LogoutButton />
-      <div >
-        <Map />
-      </div>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginButton />} />
+        <Route 
+          path="/dashboard" 
+          element={isAuthenticated ? <Dashboard user={user} /> : <LoginButton />} 
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
