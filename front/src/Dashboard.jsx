@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Sidebar from './components/auth0/Sidebar'; // Usamos tu Sidebar
-import Map from './components/auth0/Map';         // Mapa con la imagen temporal
+import GoogleMap from './components/auth0/GoogleMap';         // Mapa con la imagen temporal
 import Filter from './components/auth0/Filter';   // Filtro
 import axios from 'axios';
 import { useEffect, useState} from 'react';
@@ -13,7 +13,6 @@ function Dashboard({ user }) {
 
   // userData tiene todos los datos del usuario
   // userData: {
-  //   
   //   email: "",
   //   location: {
   //     latitude: 0,
@@ -80,7 +79,7 @@ function Dashboard({ user }) {
       </p>
       {/* <Filter/> */}
       </div>
-      <Map user={user} userData={userData}/>
+      <GoogleMap user={user} userData={userData}/>
     </div>
     </div>
   );
